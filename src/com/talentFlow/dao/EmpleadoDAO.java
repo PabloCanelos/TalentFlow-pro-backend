@@ -66,8 +66,25 @@ public class EmpleadoDAO {
             System.out.println("ERROR en el dao" + e.getMessage());
             throw  e;       
     }
-        return lista;
-     
-    
+        return lista;    
 }
+    public Empleado buscarPorId(int idBuscado) throws SQLException{
+        Empleado emp = null;
+        Connection conn = DatabaseConnection.getInstance().getConnection();
+        String query= "SELECT * empleado FROM empleados WHERE id = ?";
+        try(PreparedStatement ps = conn.prepareStatement(query)) {
+            try(ResultSet rs = ps.executeQuery()) {
+                //usamos if en vez de while porque solo esperamos un resultado
+                if(rs.next()){
+                    emp = new Empleado();
+                    emp.setId(rs.getInt("id"));
+                    emp.setNombre(rs.getString("nombre"));
+                    emp.setSueldo(rs.getDouble("sueldo"));
+                }
+                
+            } 
+            return emp;
+            // Si no lo encontró, devolverá null, y el Controlador sabrá qué hacer.
+        } 
+    }
 }
