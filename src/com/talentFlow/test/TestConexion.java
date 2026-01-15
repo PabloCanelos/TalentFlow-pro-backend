@@ -4,39 +4,67 @@
  */
 package com.talentFlow.test;
 import com.talentFlow.config.DatabaseConnection;
+import com.talentFlow.model.Empleado;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+import com.talentFlow.dao.EmpleadoDAO;
+import com.talentFlow.model.Empleado;
+
 /**
  *
  * @author Pablo Canelos
  */
 public class TestConexion {
     public static void main(String[] args) {
-        try {
-    // Simulamos un dato que viene de un formulario (String)
-    String sueldoTxt = "2500.80"; 
-    
-    // Aplicamos el PARSE que mencionaste [cite: 2026-01-12]
-    double sueldoProcesado = Double.parseDouble(sueldoTxt); 
-    
-    // Obtenemos la conexión del Singleton corregido [cite: 2026-01-08]
-    Connection con = DatabaseConnection.getInstance().getConnection();
-    
-    String sql = "INSERT INTO empleados (nombre, sueldo, id_departamento) VALUES (?, ?, ?)";
-    PreparedStatement ps = con.prepareStatement(sql);
-    ps.setString(1, "Empleado de Prueba");
-    ps.setDouble(2, sueldoProcesado); // El sueldo ya es double gracias al parse
-    ps.setInt(3, 1); // ID del departamento Tecnología
-    
-    ps.executeUpdate();
-    System.out.println("¡Éxito! Empleado guardado tras el Parse.");
-    
-} catch (Exception e) {
-    System.out.println("Error en la prueba: " + e.getMessage());
-}
+        EmpleadoDAO dao = new EmpleadoDAO();
+    int idABuscar = 101; // Cambia esto por un ID que tengas en tu BD
+
+    System.out.println("--- PRUEBA DE FLUJO DE DATOS ---");
+
+    try {
+        // 1. Intentamos buscar al empleado
+        Empleado emp = dao.buscarPorId(idABuscar);
+
+        if (emp != null) {
+            System.out.println("Empleado encontrado: " + emp.getNombre());
+            System.out.println("Sueldo: " + emp.getSueldo());
+
+            // 2. Si existe, intentamos eliminarlo
+            System.out.println("\nIntentando eliminar al empleado...");
+            if (dao.eliminar(idABuscar)) {
+                System.out.println("ÉXITO: Registro borrado de la base de datos.");
+            } else {
+                System.out.println("FALLO: No se pudo eliminar.");
+            }
+
+            // 3. Verificamos que ya no exista
+            Empleado comprobacion = dao.buscarPorId(idABuscar);
+            if (comprobacion == null) {
+                System.out.println("\nConfirmación: El empleado ya no existe en la BD (Resultado null).");
+            }
+
+        } else {
+            System.out.println("El empleado con ID " + idABuscar + " no existe. Prueba con otro.");
+        }
+
+    } catch (Exception e) {
+        System.err.println("Ocurrió un error inesperado en el Main: " + e.getMessage());
     }
+    
+}
+   
+}
+    
+    
+    
+    
+        
+
         
     
     
