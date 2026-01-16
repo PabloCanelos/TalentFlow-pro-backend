@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import com.talentFlow.dao.EmpleadoDAO;
 import com.talentFlow.model.Empleado;
+import com.talentFlow.dao.DepartamentoDAO;
+import com.talentFlow.model.Departamento;
 
 /**
  *
@@ -21,53 +23,19 @@ import com.talentFlow.model.Empleado;
  */
 public class TestConexion {
     public static void main(String[] args) {
-        EmpleadoDAO dao = new EmpleadoDAO();
-    int idABuscar = 101; // Cambia esto por un ID que tengas en tu BD
+        // 1. Instanciamos el DAO
+        // 1. Necesitamos un objeto departamento primero
+Departamento d1 = new Departamento();
+d1.setIdDepartamento(1);
+d1.setNombreDepartamento("Tecnología");
 
-    System.out.println("--- PRUEBA DE FLUJO DE DATOS ---");
+// 2. Ahora creamos al empleado pasándole el OBJETO completo
+Empleado emp = new Empleado(101, "Carlos Gomez", 2500.0, d1);
 
-    try {
-        // 1. Intentamos buscar al empleado
-        Empleado emp = dao.buscarPorId(idABuscar);
-
-        if (emp != null) {
-            System.out.println("Empleado encontrado: " + emp.getNombre());
-            System.out.println("Sueldo: " + emp.getSueldo());
-
-            // 2. Si existe, intentamos eliminarlo
-            System.out.println("\nIntentando eliminar al empleado...");
-            if (dao.eliminar(idABuscar)) {
-                System.out.println("ÉXITO: Registro borrado de la base de datos.");
-            } else {
-                System.out.println("FALLO: No se pudo eliminar.");
-            }
-
-            // 3. Verificamos que ya no exista
-            Empleado comprobacion = dao.buscarPorId(idABuscar);
-            if (comprobacion == null) {
-                System.out.println("\nConfirmación: El empleado ya no existe en la BD (Resultado null).");
-            }
-
-        } else {
-            System.out.println("El empleado con ID " + idABuscar + " no existe. Prueba con otro.");
-        }
-
-    } catch (Exception e) {
-        System.err.println("Ocurrió un error inesperado en el Main: " + e.getMessage());
+// 3. Probamos que funcione
+System.out.println("Empleado: " + emp.getNombre());
+System.out.println("Depto: " + emp.getDepartamento().getNombreDepartamento());
+      
     }
-    
-}
-   
-}
-    
-    
-    
-    
-        
-
-        
-    
-    
-    
-    
+      
 }

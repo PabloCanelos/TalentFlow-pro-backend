@@ -11,7 +11,7 @@ import com.talentFlow.model.Departamento;
  *
  * @author Pavilion X360
  */
-public class departamentoDAO {
+public class DepartamentoDAO {
     public boolean insertarNuevoDepartamento(Departamento dep) throws SQLException{
         String query = "INSERT INTO departamentos(id, nombre) VALUES(?,?)";
         
@@ -30,20 +30,17 @@ public class departamentoDAO {
     }
     
     public Departamento buscarDepartamentoPorId(int id) throws SQLException {
-        String query =  "SELECT FROM departamentos WHERE id = ?";
+        String query =  "SELECT * FROM departamentos WHERE id = ?";
         Departamento dep = null;
-        
         try(Connection conn = DatabaseConnection.getInstance().getConnection();
             PreparedStatement ps = conn.prepareStatement(query)) {
 
-
             try(ResultSet rs = ps.executeQuery()) {
                 if(rs.next()){
+                    dep = new Departamento();
                     dep.setIdDepartamento(rs.getInt("id"));
                     dep.setNombreDepartamento(rs.getString("nombre"));
-                    
-                }
-               
+                }     
                 
             } catch (SQLException e) {
                 System.out.println("Error EN departamentoDAO"+ e.getMessage());
@@ -53,7 +50,7 @@ public class departamentoDAO {
         
     }
     
-    public List<Departamento> listarDepartamentos(){
+    public List<Departamento> listarDepartamentos() throws SQLException{
         String query = "SELECT * FROM departamentos";
         List<Departamento> listaDepartamentos = new ArrayList<>();
         
@@ -66,11 +63,8 @@ public class departamentoDAO {
                 
                 dep.setIdDepartamento(rs.getInt("id"));
                 dep.setNombreDepartamento(rs.getString("nombre"));
-                listaDepartamentos.add(dep);
-                return  listaDepartamentos;
-                
-            }
-            
+                listaDepartamentos.add(dep);               
+            }        
             
         } catch (SQLException e) {
             System.out.println("Error en listar Deapartamentos" + e.getMessage());

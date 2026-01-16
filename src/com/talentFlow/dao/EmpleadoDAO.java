@@ -4,6 +4,7 @@
  */
 package com.talentFlow.dao;
 import com.talentFlow.config.DatabaseConnection;
+import com.talentFlow.model.Departamento;
 import com.talentFlow.model.Empleado;
 import java.sql.*;
 import java.util.ArrayList;
@@ -39,13 +40,21 @@ public class EmpleadoDAO {
             PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, emp.getNombre());
             ps.setDouble(2, emp.getSueldo());
-            ps.setInt(3, emp.getIdDepartamento());
             
-            int filasInsertadas = ps.executeUpdate();
-            return filasInsertadas >0;
-            
+            int idDepto = emp.getDepartamento().getIdDepartamento();
+            ps.setInt(3, idDepto);
+        
+            ps.executeUpdate();
+            System.out.println("✅ Empleado insertado con éxito.");
+            int filasAfectadas = ps.executeUpdate();
+        
+            if (filasAfectadas > 0) {
+            System.out.println("✅ Empleado insertado con éxito.");
+            return true; // <--- ÉXITO REAL
+        }
         } catch (SQLException e) {
             System.out.println("Error: al conectar la base de datos" + e.getMessage());
+            throw e;
         }
         return false;
         
@@ -64,7 +73,15 @@ public class EmpleadoDAO {
                     emp.setId(rs.getInt("id"));
                     emp.setNombre(rs.getString("nombre"));
                     emp.setSueldo(rs.getDouble("sueldo"));
-                    emp.setIdDepartamento(rs.getInt("id_departamento"));
+                    
+                    int idDeptoFK = rs.getInt("id_departamento");
+                
+                // 2. Usamos el otro DAO para traer el objeto Departamento completo
+                DepartamentoDAO deptoDAO = new DepartamentoDAO();
+                Departamento deptoCompleto = deptoDAO.buscarDepartamentoPorId(idDeptoFK);
+                
+                // 3. Se lo "inyectamos" al empleado
+                emp.setDepartamento(deptoCompleto);
                 }
                 
             } catch (SQLException e) {
@@ -103,10 +120,15 @@ public class EmpleadoDAO {
                 emp.setId(rs.getInt("id"));
                 emp.setNombre(rs.getString("nombre"));
                 emp.setSueldo(rs.getDouble("sueldo"));
-                emp.setIdDepartamento(rs.getInt("id_departamento"));
                 
-                lista.add(emp);
-                return lista;                     
+                Departamento dep = new Departamento();
+            // 2. Le asignamos el ID que viene de la base de datos
+            dep.setIdDepartamento(rs.getInt("id_departamento"));
+            
+            // 3. Le pasamos el objeto completo al empleado
+            emp.setDepartamento(dep);
+                
+                lista.add(emp);                  
             }
        
         } catch (SQLException e) {
@@ -132,7 +154,14 @@ public class EmpleadoDAO {
                 emp.setId(rs.getInt("id"));
                 emp.setNombre(rs.getString("nombre"));
                 emp.setSueldo(rs.getDouble("sueldo"));
-                emp.setIdDepartamento(rs.getInt("id_departamento"));
+                
+                Departamento dep = new Departamento();
+                dep.setIdDepartamento(rs.getInt("id_departamento"));
+                
+                // Si quieres que el objeto esté "lleno" (con nombre de depto), 
+                // podrías llamar aquí al DepartamentoDAO, pero por ahora 
+                // esto es suficiente para que el código compile y funcione.
+                emp.setDepartamento(dep);
                 
                 resultados.add(emp);                
             }      

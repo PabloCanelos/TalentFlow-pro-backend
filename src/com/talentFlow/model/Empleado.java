@@ -1,6 +1,6 @@
 
 package com.talentFlow.model;
-
+import com.talentFlow.model.Departamento;
 /**
  *
  * @author Pavilion X360
@@ -9,18 +9,20 @@ public class Empleado {
     private int id;
     private String nombre;
     private double sueldo;
-    private int idDepartamento;
+    private Departamento departamento;
     
     // Constructor vacío (necesario para frameworks)
     public Empleado(){}
 
-    public Empleado(int id, String nombre, double sueldo, int idDepartamento) {
+    public Empleado(int id, String nombre, double sueldo, Departamento departamento) {
         this.id = id;
         this.nombre = nombre;
         this.sueldo = sueldo;
-        this.idDepartamento = idDepartamento;
+        this.departamento = departamento;
     }
 
+    
+    
     public int getId() {
         return id;
     }
@@ -45,12 +47,14 @@ public class Empleado {
         this.sueldo = sueldo;
     }
 
-    public int getIdDepartamento() {
-        return idDepartamento;
+
+
+    public Departamento getDepartamento() {
+        return departamento;
     }
 
-    public void setIdDepartamento(int idDepartamento) {
-        this.idDepartamento = idDepartamento;
+    public void setDepartamento(Departamento departamento) {
+        this.departamento = departamento;
     }
     
     
