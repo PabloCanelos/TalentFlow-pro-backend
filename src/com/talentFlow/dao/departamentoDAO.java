@@ -13,7 +13,7 @@ import com.talentFlow.model.Departamento;
  */
 public class DepartamentoDAO {
     public boolean insertarNuevoDepartamento(Departamento dep) throws SQLException{
-        String query = "INSERT INTO departamentos(id, nombre) VALUES(?,?)";
+        String query = "INSERT INTO departamentos(nombre_departamento) VALUES(?)";
         
         try(Connection conn = DatabaseConnection.getInstance().getConnection();
             PreparedStatement ps = conn.prepareStatement(query)) {
@@ -30,16 +30,16 @@ public class DepartamentoDAO {
     }
     
     public Departamento buscarDepartamentoPorId(int id) throws SQLException {
-        String query =  "SELECT * FROM departamentos WHERE id = ?";
+        String query =  "SELECT * FROM departamentos WHERE id_departamento = ?";
         Departamento dep = null;
         try(Connection conn = DatabaseConnection.getInstance().getConnection();
             PreparedStatement ps = conn.prepareStatement(query)) {
-
+            ps.setInt(1, id);
             try(ResultSet rs = ps.executeQuery()) {
                 if(rs.next()){
                     dep = new Departamento();
-                    dep.setIdDepartamento(rs.getInt("id"));
-                    dep.setNombreDepartamento(rs.getString("nombre"));
+                    dep.setIdDepartamento(rs.getInt("id_departamento"));
+                    dep.setNombreDepartamento(rs.getString("nombre_departamento"));
                 }     
                 
             } catch (SQLException e) {
@@ -61,8 +61,8 @@ public class DepartamentoDAO {
             while (rs.next()) {
                 Departamento dep = new Departamento();
                 
-                dep.setIdDepartamento(rs.getInt("id"));
-                dep.setNombreDepartamento(rs.getString("nombre"));
+                dep.setIdDepartamento(rs.getInt("id_departamento"));
+                dep.setNombreDepartamento(rs.getString("nombre_departamento"));
                 listaDepartamentos.add(dep);               
             }        
             
@@ -73,7 +73,7 @@ public class DepartamentoDAO {
     }
     
     public boolean eliminarDepartamento(int id) throws SQLException{
-        String query= "DELETE FROM departamentos WHERE id = ?";
+        String query= "DELETE FROM departamentos WHERE id_departamento = ?";
         
         try(Connection conn = DatabaseConnection.getInstance().getConnection();
             PreparedStatement ps = conn.prepareStatement(query)) {
