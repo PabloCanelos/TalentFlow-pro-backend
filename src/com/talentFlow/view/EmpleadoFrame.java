@@ -10,6 +10,7 @@ import com.talentFlow.config.DatabaseConnection;
 import com.talentFlow.dao.EmpleadoDAO;
 import com.talentflow.view.util.DepartamentoUIHelper;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -18,7 +19,9 @@ import javax.swing.*;
  * @author Pavilion X360
  */
 public class EmpleadoFrame extends javax.swing.JFrame {
-
+    DepartamentoDAO depDao = new DepartamentoDAO();
+    private int idSeleccionadoParaActualizar = -1;
+    private int idMemoria = -1;
     /**
      * Creates new form EmpleadoFrame
      */
@@ -44,10 +47,10 @@ public class EmpleadoFrame extends javax.swing.JFrame {
         btnGuardarDepto = new javax.swing.JButton();
         jScrollPane1 = new javax.swing.JScrollPane();
         jTable1 = new javax.swing.JTable();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
-        jButton4 = new javax.swing.JButton();
+        btnBuscarDepartamento = new javax.swing.JButton();
+        btnEliminarDepartamento = new javax.swing.JButton();
+        btnListarDepartamentos = new javax.swing.JButton();
+        btnActualizarDepartamento = new javax.swing.JButton();
         lblInstruccion = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -104,16 +107,31 @@ public class EmpleadoFrame extends javax.swing.JFrame {
             jTable1.getColumnModel().getColumn(0).setPreferredWidth(20);
         }
 
-        jButton1.setText("Buscar");
-
-        jButton2.setText("Eliminar");
-
-        jButton3.setText("Listar");
-
-        jButton4.setText("Actualizar");
-        jButton4.addActionListener(new java.awt.event.ActionListener() {
+        btnBuscarDepartamento.setText("Buscar");
+        btnBuscarDepartamento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton4ActionPerformed(evt);
+                btnBuscarDepartamentoActionPerformed(evt);
+            }
+        });
+
+        btnEliminarDepartamento.setText("Eliminar");
+        btnEliminarDepartamento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnEliminarDepartamentoActionPerformed(evt);
+            }
+        });
+
+        btnListarDepartamentos.setText("Listar");
+        btnListarDepartamentos.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnListarDepartamentosActionPerformed(evt);
+            }
+        });
+
+        btnActualizarDepartamento.setText("Actualizar");
+        btnActualizarDepartamento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnActualizarDepartamentoActionPerformed(evt);
             }
         });
 
@@ -132,22 +150,22 @@ public class EmpleadoFrame extends javax.swing.JFrame {
                                     .addGroup(panelDepartamentosLayout.createSequentialGroup()
                                         .addComponent(btnGuardarDepto)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                        .addComponent(jButton1, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(btnBuscarDepartamento, javax.swing.GroupLayout.PREFERRED_SIZE, 79, javax.swing.GroupLayout.PREFERRED_SIZE))
                                     .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE))
                                 .addGap(38, 38, 38)
                                 .addGroup(panelDepartamentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(txtNombreDepartamento, javax.swing.GroupLayout.PREFERRED_SIZE, 200, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addGroup(panelDepartamentosLayout.createSequentialGroup()
-                                        .addComponent(jButton2)
+                                        .addComponent(btnEliminarDepartamento)
                                         .addGap(42, 42, 42)
-                                        .addComponent(jButton3, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(btnListarDepartamentos, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(42, 42, 42)
-                                        .addComponent(jButton4)))
+                                        .addComponent(btnActualizarDepartamento)))
                                 .addGap(50, 50, 50))))
                     .addGroup(panelDepartamentosLayout.createSequentialGroup()
                         .addGap(247, 247, 247)
                         .addComponent(lblInstruccion, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(150, Short.MAX_VALUE))
         );
         panelDepartamentosLayout.setVerticalGroup(
             panelDepartamentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -161,10 +179,10 @@ public class EmpleadoFrame extends javax.swing.JFrame {
                 .addGap(18, 18, 18)
                 .addGroup(panelDepartamentosLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnGuardarDepto)
-                    .addComponent(jButton1)
-                    .addComponent(jButton2)
-                    .addComponent(jButton3)
-                    .addComponent(jButton4))
+                    .addComponent(btnBuscarDepartamento)
+                    .addComponent(btnEliminarDepartamento)
+                    .addComponent(btnListarDepartamentos)
+                    .addComponent(btnActualizarDepartamento))
                 .addGap(84, 84, 84)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 104, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(214, Short.MAX_VALUE))
@@ -189,39 +207,135 @@ public class EmpleadoFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnGuardarDeptoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnGuardarDeptoActionPerformed
-        String nombre = txtNombreDepartamento.getText();
         
-        if(nombre.isEmpty()){
-            JOptionPane.showMessageDialog(this, "El nombre no puede estar vacio");
+        String nombreDepto = txtNombreDepartamento.getText().trim();
+        if(nombreDepto.isEmpty()){
+            JOptionPane.showMessageDialog(this, "este campo no puede quedar vacio");
             return;
         }
-        //confirmacion
-        int confirmar = JOptionPane.showConfirmDialog(this, "¿desea guardar el departamento" + nombre);
-        if(confirmar == JOptionPane.YES_OPTION){
+        if(nombreDepto.length()>45){
+            JOptionPane.showMessageDialog(this, "el nombre es demasiado largo(maximo 45 caracteres)");
+            return;
+        }
+        if(nombreDepto.matches("^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$"))
+        try {
             Departamento depto = new Departamento();
-            depto.setNombreDepartamento(nombre);
+            depto.setNombreDepartamento(nombreDepto);
             
             DepartamentoDAO dao = new DepartamentoDAO();
-            try {
-                if(dao.insertarNuevoDepartamento(depto)){
-                    JOptionPane.showMessageDialog(this, "GUardado con exito");
-                    DepartamentoUIHelper.limpiarFormulario(txtNombreDepartamento, lblInstruccion);
-                }else{
-                    JOptionPane.showMessageDialog(this, "Error en la base de datos");
-                    
-                }
-            } catch (SQLException ex) {
-                Logger.getLogger(EmpleadoFrame.class.getName()).log(Level.SEVERE, null, ex);
-            }
+            dao.insertarNuevoDepartamento(depto);
+            JOptionPane.showMessageDialog(this, "Departamento insertado exitosamente");
+            txtNombreDepartamento.setText("");
+             btnListarDepartamentosActionPerformed(null);
+            
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error en SQL" + e.getMessage());
         }
         
         
 
     }//GEN-LAST:event_btnGuardarDeptoActionPerformed
 
-    private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
+    private void btnActualizarDepartamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnActualizarDepartamentoActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jButton4ActionPerformed
+        if (idMemoria == -1) {
+        JOptionPane.showMessageDialog(this, "Debe buscar un departamento antes de actualizar");
+        return;
+    }
+
+    try {
+        Departamento dep = new Departamento();
+        dep.setIdDepartamento(idMemoria); // Usamos el ID que el buscador nos dejó [cite: 2026-01-12]
+        dep.setNombreDepartamento(txtNombreDepartamento.getText().trim());
+
+        DepartamentoDAO dao = new DepartamentoDAO();
+        if (dao.actualizarDepartamento(dep)) { 
+            JOptionPane.showMessageDialog(this, "¡Registro actualizado!");
+            idMemoria = -1; // Limpiamos la memoria tras el éxito
+            txtNombreDepartamento.setText("");
+            // Aquí llamarías a cargarTabla() para que el usuario vea el cambio
+        }
+    } catch (SQLException e) { /* manejar error */ }
+    }//GEN-LAST:event_btnActualizarDepartamentoActionPerformed
+
+    private void btnListarDepartamentosActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnListarDepartamentosActionPerformed
+        try {
+            List<Departamento> lista = depDao.listarDepartamentos();
+            if(lista.isEmpty()){
+                System.out.println("lista esta");
+            }else{
+                System.out.println("Lista disponible");
+                for (Departamento D: lista) {
+                    System.out.println("ID " + D.getIdDepartamento()+ "\n nombre " + D.getNombreDepartamento());
+                }
+                 
+            }
+            
+        } catch (SQLException ex) {
+            System.out.println("Error en la conexion "+  ex.getMessage());
+        }
+        
+        
+        
+    }//GEN-LAST:event_btnListarDepartamentosActionPerformed
+
+    private void btnBuscarDepartamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnBuscarDepartamentoActionPerformed
+        String nombreBuscado = txtNombreDepartamento.getText().trim();
+        if(nombreBuscado.isEmpty()){
+            JOptionPane.showMessageDialog(this, "Este campo no puede quedar vacio");
+            return;
+        }
+        try {
+            DepartamentoDAO dao = new DepartamentoDAO();
+            Departamento dep = dao.buscarDepartamentoPorNombre(txtNombreDepartamento.getText().trim());
+        
+        if (dep != null) {
+            idMemoria = dep.getIdDepartamento(); // Marcamos el ID [cite: 2026-01-12]
+            txtNombreDepartamento.setText(dep.getNombreDepartamento());
+            JOptionPane.showMessageDialog(this, "Departamento listo para editar");
+        } else {
+            idMemoria = -1;
+            JOptionPane.showMessageDialog(this, "No existe ese departamento");
+        }
+            
+             
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error en sql, verifique su conexion" + e.getMessage());
+            
+            
+        }
+    }//GEN-LAST:event_btnBuscarDepartamentoActionPerformed
+
+    private void btnEliminarDepartamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnEliminarDepartamentoActionPerformed
+        String nombrebuscado = txtNombreDepartamento.getText();
+        if(nombrebuscado.isEmpty()){
+            JOptionPane.showMessageDialog(this, "rellena el campo para eliminar");
+            return;
+        }
+        try {
+            DepartamentoDAO dao = new DepartamentoDAO();
+            Departamento depto = dao.buscarDepartamentoPorNombre(nombrebuscado);
+            if(depto != null){
+                int confirmar = JOptionPane.showConfirmDialog(this, "¿SEguro que quieres eliminar " + depto.getNombreDepartamento() +
+                        " (ID: " + depto.getIdDepartamento()+ "?");
+                if(confirmar == JOptionPane.YES_OPTION){
+                    boolean exito = dao.eliminarDepartamento(depto.getIdDepartamento());
+                    if(exito){
+                        JOptionPane.showMessageDialog(this, "Eliminado con exito");
+                        
+                        txtNombreDepartamento.setText("");
+                        System.out.println("Nombre departamento" + depto.getNombreDepartamento());
+                        System.out.println("Id departamento" + depto.getIdDepartamento());
+                    }
+                    
+                }
+            }else{
+                JOptionPane.showMessageDialog(this, "No se encontro el departamento" + nombrebuscado);
+            }
+        } catch (SQLException e) {
+            JOptionPane.showMessageDialog(this, "Error en la base de datos" + e.getMessage());
+        }
+    }//GEN-LAST:event_btnEliminarDepartamentoActionPerformed
 
     /**
      * @param args the command line arguments
@@ -259,11 +373,11 @@ public class EmpleadoFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton btnActualizarDepartamento;
+    private javax.swing.JButton btnBuscarDepartamento;
+    private javax.swing.JButton btnEliminarDepartamento;
     private javax.swing.JButton btnGuardarDepto;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
+    private javax.swing.JButton btnListarDepartamentos;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTable jTable1;
